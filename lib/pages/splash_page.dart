@@ -13,6 +13,12 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
 
+  @override
+  void initState() {
+    initPage();
+    super.initState();
+  }
+
   bool isLogged = false;
   void initPage() async {
     await Future.delayed(Duration(seconds: 2));
