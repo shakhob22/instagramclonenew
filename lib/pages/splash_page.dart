@@ -1,6 +1,5 @@
 
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:instagramclone/pages/signin_page.dart';
 

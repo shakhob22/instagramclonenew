@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 
+import 'home_page.dart';
+
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
 
@@ -81,7 +83,9 @@ class _SignInPageState extends State<SignInPage> {
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(7)),
                     child: MaterialButton(
-                      onPressed: (){},
+                      onPressed: (){
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+                      },
                       minWidth: double.infinity,
                       child: Text("Sign In", style: TextStyle(color: Colors.white),),
                     )
