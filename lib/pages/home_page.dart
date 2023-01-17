@@ -39,6 +39,7 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: CupertinoTabBar(
         currentIndex: _currentIndex,
+        activeColor: Colors.purple,
         onTap: (index) {
           setState(() {
             _currentIndex = index;
