@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:instagramclone/pages/home_page.dart';
 import 'package:instagramclone/pages/signin_page.dart';
 import 'package:instagramclone/pages/splash_page.dart';
 
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SplashPage(),
+      home: HomePage(),
     );
   }
 }

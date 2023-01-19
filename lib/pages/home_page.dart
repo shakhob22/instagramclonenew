@@ -16,23 +16,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
 
-  PageController _controllerTap = PageController();
+  PageController _pageController = PageController();
   int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
-        controller: _controllerTap,
+        controller: _pageController,
         onPageChanged: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
         children: [
-          MyFeedPage(),
+          MyFeedPage(pageController: _pageController),
           MySearchPage(),
-          MyUploadPage(),
+          MyUploadPage(pageController: _pageController),
           MyLikesPage(),
           MyProfilePage(),
         ],
@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
         onTap: (index) {
           setState(() {
             _currentIndex = index;
-            _controllerTap.animateToPage(index, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+            _pageController.animateToPage(index, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
           });
         },
         items: [
