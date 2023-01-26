@@ -1,8 +1,8 @@
 class Member {
   String uid = "";
-  String fullName = "";
-  String email = "";
-  String password = "";
+  String? fullName = "";
+  String? email = "";
+  String? password = "";
   String img_url = "";
 
   String device_id = "";
@@ -13,7 +13,7 @@ class Member {
   int followers_count = 0;
   int following_count = 0;
 
-  Member(this.fullName, this.email);
+  Member({this.fullName, this.email, this.password});
 
   Member.fromJson(Map<String, dynamic> json)
       : uid = json['uid'],

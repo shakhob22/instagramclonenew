@@ -13,8 +13,8 @@ class _MySearchPageState extends State<MySearchPage> {
 
   TextEditingController searchController = TextEditingController();
   List<Member> items = [
-    Member("fullName", "emaiil"),
-    Member("fullName", "emaiil"),
+    Member(fullName: "fullName",email:  "emaiil"),
+    Member(fullName: "fullName",email: "emaiil"),
   ];
 
   @override
@@ -95,8 +95,8 @@ class _MySearchPageState extends State<MySearchPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(member.fullName, style: TextStyle(fontWeight: FontWeight.bold),),
-              Text(member.email, style: TextStyle(color: Colors.black54),),
+              Text(member.fullName!, style: TextStyle(fontWeight: FontWeight.bold),),
+              Text(member.email!, style: TextStyle(color: Colors.black54),),
             ],
           ),
           Expanded(

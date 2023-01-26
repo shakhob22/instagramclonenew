@@ -2,6 +2,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:instagramclone/models/post_model.dart';
+import 'package:instagramclone/pages/signin_page.dart';
+import 'package:instagramclone/services/auth_service.dart';
 
 class MyProfilePage extends StatefulWidget {
   const MyProfilePage({Key? key}) : super(key: key);
@@ -17,13 +19,29 @@ class _MyProfilePageState extends State<MyProfilePage> {
     Post(caption: "Post caption", imgPost: "https://firebasestorage.googleapis.com/v0/b/koreanguideway.appspot.com/o/develop%2Fpost2.png?alt=media&token=ac0c131a-4e9e-40c0-a75a-88e586b28b72"),
   ];
 
+  void doSignOut() {
+    AuthService.signOutUser().then((value) => {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInPage())),
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        iconTheme: IconThemeData(
+          color: Colors.black,
+        ),
         title: Text("Profile", style: TextStyle(color: Colors.black, fontFamily: "billabong", fontSize: 28)),
+        actions: [
+          IconButton(
+            onPressed: doSignOut,
+            icon: Icon(Icons.output),
+          )
+        ],
       ),
       body: Container(
         width: double.infinity,

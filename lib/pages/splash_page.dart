@@ -2,6 +2,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:instagramclone/pages/signin_page.dart';
+import 'package:instagramclone/services/auth_service.dart';
+
+import 'home_page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
@@ -21,8 +24,9 @@ class _SplashPageState extends State<SplashPage> {
   bool isLogged = false;
   void initPage() async {
     await Future.delayed(Duration(seconds: 2));
+    isLogged = AuthService.isLoggedIn();
     if (isLogged) {
-
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
     } else {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInPage()));
     }
