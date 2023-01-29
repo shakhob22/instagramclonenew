@@ -1,9 +1,15 @@
 
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:instagramclone/models/member_model.dart';
 import 'package:instagramclone/models/post_model.dart';
 import 'package:instagramclone/pages/signin_page.dart';
 import 'package:instagramclone/services/auth_service.dart';
+import 'package:instagramclone/services/db_service.dart';
+import 'package:instagramclone/services/file_service.dart';
 
 class MyProfilePage extends StatefulWidget {
   const MyProfilePage({Key? key}) : super(key: key);
@@ -19,10 +25,57 @@ class _MyProfilePageState extends State<MyProfilePage> {
     Post(caption: "Post caption", imgPost: "https://firebasestorage.googleapis.com/v0/b/koreanguideway.appspot.com/o/develop%2Fpost2.png?alt=media&token=ac0c131a-4e9e-40c0-a75a-88e586b28b72"),
   ];
 
+  File? _image;
+  final ImagePicker _picker = ImagePicker();
+  String fullName = "";
+  String email = "";
+  String imgUrl = "";
+
+
+  _imgFromGallery() async {
+    XFile? image =
+    await _picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
+    print(image!.path.toString());
+    setState(() {
+      _image = File(image.path);
+    });
+    uploadMemberImage();
+  }
   void doSignOut() {
     AuthService.signOutUser().then((value) => {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SignInPage())),
     });
+  }
+
+  void getMember() {
+    DataService.loadMember().then((member) => {
+      setState((){
+        fullName = member.fullName!;
+        email = member.email!;
+        imgUrl = member.img_url;
+      }),
+    });
+  }
+
+  void uploadMemberImage() {
+    if (_image == null) return;
+    FileService.uploadMemberImage(_image!).then((value) => {
+      print(value),
+      updateMember(value),
+    });
+  }
+
+  void updateMember(String downloadUrl) async {
+    Member member = await DataService.loadMember();
+    member.img_url = downloadUrl;
+    await DataService.updateMember(member);
+    getMember();
+  }
+
+  @override
+  void initState() {
+    getMember();
+    super.initState();
   }
 
   @override
@@ -61,26 +114,32 @@ class _MyProfilePageState extends State<MyProfilePage> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(35),
-                    child: Image(
+                    child: (imgUrl.isNotEmpty) ?
+                    Image.network(imgUrl, height: 70, width: 70, fit: BoxFit.cover,) :
+                    Image(
                       height: 70,
                       width: 70,
                       image: AssetImage("assets/images/ic_userImage.png"),
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                Container(
-                  height: 80,
-                  width: 80,
-                  child: Align(
-                    alignment: Alignment.bottomRight,
-                    child: Icon(Icons.add_circle, color: Colors.purple),
+                GestureDetector(
+                  onTap: _imgFromGallery,
+                  child: Container(
+                    height: 80,
+                    width: 80,
+                    child: Align(
+                      alignment: Alignment.bottomRight,
+                      child: Icon(Icons.add_circle, color: Colors.purple),
+                    ),
                   ),
                 ),
               ],
             ),
             SizedBox(height: 10,),
-            Text("User Name", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-            Text("username@gmail.com", style: TextStyle(color: Colors.black54),),
+            Text(fullName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+            Text(email, style: TextStyle(color: Colors.black54),),
             Container(
               margin: EdgeInsets.only(top: 10),
               height: 80,

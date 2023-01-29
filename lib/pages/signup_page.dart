@@ -1,7 +1,10 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:instagramclone/models/member_model.dart';
 import 'package:instagramclone/pages/signin_page.dart';
 import 'package:instagramclone/services/auth_service.dart';
+import 'package:instagramclone/services/db_service.dart';
 import 'package:instagramclone/services/utils_service.dart';
 
 import 'home_page.dart';
@@ -46,11 +49,12 @@ class _SignUpPageState extends State<SignUpPage> {
     });
 
     try {
-      await AuthService.signUpUser(email, password).then((value) => {
-        if (value != null) {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage())),
-        }
-      });
+      User? firebaseUser = await AuthService.signUpUser(email, password);
+      if (firebaseUser != null) {
+        Member member = Member(fullName: fullName, email: email, password: password);
+        await DataService.storeMember(member);
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+      }
     } catch (e) {} finally {
       setState(() {
         isLoading = false;
