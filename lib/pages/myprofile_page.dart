@@ -10,6 +10,7 @@ import 'package:instagramclone/pages/signin_page.dart';
 import 'package:instagramclone/services/auth_service.dart';
 import 'package:instagramclone/services/db_service.dart';
 import 'package:instagramclone/services/file_service.dart';
+import 'package:instagramclone/services/utils_service.dart';
 
 class MyProfilePage extends StatefulWidget {
   const MyProfilePage({Key? key}) : super(key: key);
@@ -91,7 +92,12 @@ class _MyProfilePageState extends State<MyProfilePage> {
         title: Text("Profile", style: TextStyle(color: Colors.black, fontFamily: "billabong", fontSize: 28)),
         actions: [
           IconButton(
-            onPressed: doSignOut,
+            onPressed: () async {
+              bool yes = await Utils.commonDialog(context, "Profildan chiqish", "Profilingizdan chiqmoqchimisiz?", "Ha", "Yo'q", false);
+              if (yes) {
+                doSignOut();
+              }
+            },
             icon: Icon(Icons.output),
           )
         ],

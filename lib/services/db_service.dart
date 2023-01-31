@@ -26,5 +26,41 @@ class DataService {
     String uid = AuthService.currentUserId();
     return _firestore.collection(folderUser).doc(uid).update(member.toJson());
   }
+
+  static Future<List<Member>> searchMembers(List keywords) async {
+    print(keywords);
+    List<Member> members = [];
+    String uid = AuthService.currentUserId();
+
+
+    for (var item in keywords) {
+      var querySnapshot = await _firestore.collection(folderUser).where("email", isEqualTo: item).get();
+
+      querySnapshot.docs.forEach((element) {
+        Member newMember = Member.fromJson(element.data());
+        if (newMember.uid != uid) {
+          print(newMember.fullName);
+          members.add(newMember);
+        }
+      });
+    }
+
+    return members;
+  }
+
+  static Future<List<Member>> loadAllMembers() async {
+
+    List<Member> members = [];
+
+    var docs = await _firestore.collection(folderUser).get();
+    for (var doc in docs.docs) {
+      Member member = Member.fromJson(doc.data());
+      members.add(member);
+    }
+
+    return members;
+
+  }
   
 }
+

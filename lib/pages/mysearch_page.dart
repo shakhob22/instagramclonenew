@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:instagramclone/models/member_model.dart';
+import 'package:instagramclone/services/db_service.dart';
 
 class MySearchPage extends StatefulWidget {
   const MySearchPage({Key? key}) : super(key: key);
@@ -12,10 +13,50 @@ class MySearchPage extends StatefulWidget {
 class _MySearchPageState extends State<MySearchPage> {
 
   TextEditingController searchController = TextEditingController();
-  List<Member> items = [
-    Member(fullName: "fullName",email:  "emaiil"),
-    Member(fullName: "fullName",email: "emaiil"),
-  ];
+  List<Member> items = [];
+  bool isLoading = false;
+
+  List emails = [];
+
+  void getMembers() {
+    DataService.loadAllMembers().then((value) => {
+      setState((){
+        for (var item in value) {
+          emails.add(item.email!);
+        }
+        print(emails);
+      }),
+    });
+  }
+
+  void searchMember(String keyword) {
+
+    setState(() {
+      isLoading = true;
+    });
+
+    List listForSearch = [];
+    for (int i = 0; i < emails.length; i++) {
+      if (emails[i].contains(keyword)) {
+        listForSearch.add(emails[i]);
+      }
+    }
+
+    DataService.searchMembers(listForSearch).then((value) => {
+      setState((){
+        items = value;
+        isLoading = false;
+      }),
+    });
+  }
+
+  @override
+  void initState() {
+    getMembers();
+    // searchMember("");
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +84,7 @@ class _MySearchPageState extends State<MySearchPage> {
                 controller: searchController,
                 onChanged: (text) {
                   print(text);
+                  searchMember(text.toLowerCase());
                 },
                 decoration: InputDecoration(
                   hintText: "Search",
@@ -83,21 +125,31 @@ class _MySearchPageState extends State<MySearchPage> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(22.5),
-              child: Image(
+              child: (member.img_url.isEmpty) ?
+              Image(
                 image: AssetImage("assets/images/ic_userImage.png"),
                 height: 45,
                 width: 45,
+                fit: BoxFit.cover,
+              ) :
+              Image(
+                image: NetworkImage(member.img_url),
+                height: 45,
+                width: 45,
+                fit: BoxFit.cover,
               ),
             ),
           ),
           SizedBox(width: 15,),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(member.fullName!, style: TextStyle(fontWeight: FontWeight.bold),),
-              Text(member.email!, style: TextStyle(color: Colors.black54),),
-            ],
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(member.fullName!, style: TextStyle(fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),),
+                Text(member.email!, style: TextStyle(color: Colors.black54, overflow: TextOverflow.ellipsis),),
+              ],
+            ),
           ),
           Expanded(
             child: member.followed ?

@@ -21,7 +21,7 @@ class _SignInPageState extends State<SignInPage> {
   bool isLoading = false;
   void doSignIn() async {
     String email = emailController.text.trim();
-    String password = emailController.text.trim();
+    String password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) return;
 
@@ -45,7 +45,9 @@ class _SignInPageState extends State<SignInPage> {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage())),
         }
       });
-    } catch (e) {} finally {
+    } catch (e) {
+      print("RASVO");
+    } finally {
       setState(() {
         isLoading = false;
       });
