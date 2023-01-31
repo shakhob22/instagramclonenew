@@ -1,6 +1,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagramclone/services/auth_service.dart';
+import 'package:instagramclone/services/utils_service.dart';
 
 import '../models/member_model.dart';
 
@@ -12,6 +13,13 @@ class DataService {
   // save user
   static Future storeMember(Member member) async {
     member.uid = AuthService.currentUserId();
+
+    Map<String, String> params = await Utils.deviceParams();
+
+    member.device_id = params["device_id"]!;
+    member.device_type = params["device_type"]!;
+    member.device_token = params["device_token"]!;
+
     return _firestore.collection(folderUser).doc(member.uid).set(member.toJson());
   }
 

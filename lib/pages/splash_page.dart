@@ -1,8 +1,10 @@
 
 import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:instagramclone/pages/signin_page.dart';
 import 'package:instagramclone/services/auth_service.dart';
+import 'package:instagramclone/services/prefs_service.dart';
 
 import 'home_page.dart';
 
@@ -15,8 +17,20 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
 
+  static final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+  void _initNotification() async {
+    _firebaseMessaging.getToken().then((value) async {
+      String fcmToken = value.toString();
+      await Prefs.saveFCM(fcmToken);
+      String token = await Prefs.loadFCM();
+      print(token);
+    });
+  }
+
   @override
   void initState() {
+    _initNotification();
     initPage();
     super.initState();
   }
