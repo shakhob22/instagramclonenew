@@ -20,4 +20,14 @@ class FileService {
     return downloadUrl;
   }
 
+  static Future<String> uploadPostImage(File image) async {
+    String uid = AuthService.currentUserId();
+    String imgName = uid + "_" + DateTime.now().toString();
+    var firebaseStorageRef = _storage.child(postImage).child(imgName);
+    var uploadTask = firebaseStorageRef.putFile(image);
+    final TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() => {});
+    String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+    return downloadUrl;
+  }
+
 }

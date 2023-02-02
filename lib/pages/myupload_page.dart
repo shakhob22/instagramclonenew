@@ -3,6 +3,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagramclone/services/db_service.dart';
+import 'package:instagramclone/services/file_service.dart';
+
+import '../models/post_model.dart';
 
 class MyUploadPage extends StatefulWidget {
   final PageController? pageController;
@@ -17,16 +21,34 @@ class _MyUploadPageState extends State<MyUploadPage> {
   File? _image;
   final ImagePicker _picker = ImagePicker();
   TextEditingController captionController = TextEditingController();
+  bool isLoading = false;
 
   void doUpload() {
     String caption = captionController.text;
     if (caption.isEmpty || _image == null) {
       return;
     } else {
-      _image = null;
-      captionController.clear();
-      widget.pageController?.animateToPage(0, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+      setState(() {
+        isLoading = true;
+      });
+      FileService.uploadPostImage(_image!).then((value) => {
+
+      });
+
+
     }
+  }
+
+  void resPostImage(String downloadUrl) async {
+    String caption = captionController.text.trim();
+    Post post = Post(caption : caption, imgPost: downloadUrl);
+    await DataService.storePost(post);
+    setState(() {
+      isLoading = false;
+    });
+    _image = null;
+    captionController.clear();
+    widget.pageController?.animateToPage(0, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
   }
 
 

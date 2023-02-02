@@ -4,11 +4,13 @@ import 'package:instagramclone/services/auth_service.dart';
 import 'package:instagramclone/services/utils_service.dart';
 
 import '../models/member_model.dart';
+import '../models/post_model.dart';
 
 class DataService {
   
   static final _firestore = FirebaseFirestore.instance;
   static String folderUser = "Users";
+  static String folderPost = "posts";
   
   // save user
   static Future storeMember(Member member) async {
@@ -68,6 +70,16 @@ class DataService {
 
     return members;
 
+  }
+
+  static Future<Post> storePost(Post post) async {
+    String uid = AuthService.currentUserId();
+    post.uid = uid;
+    post.date = Utils.currentDate();
+
+    String postId = _firestore.collection(folderUser).doc(uid).id;
+    await _firestore.collection(folderUser).doc(uid).collection(folderPost).doc(postId).set(post.toJson());
+    return post;
   }
   
 }

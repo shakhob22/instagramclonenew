@@ -66,14 +66,14 @@ class _MyFeedPageState extends State<MyFeedPage> {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(40),
-                      child: (post.imgUser == null) ?
+                      child: (true) ?
                       Image(
                         height: 40,
                         width: 40,
                         image: AssetImage("assets/images/ic_userImage.png"),
                       ) :
                       Image.network(
-                        post.imgUser.toString(),
+                        "post.imgUser.toString(),",
                         height: 40,
                         width: 40,
                         fit: BoxFit.cover,
