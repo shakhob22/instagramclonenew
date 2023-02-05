@@ -87,6 +87,13 @@ class DataService {
   static Future<List<Post>> loadPosts() async {
     List<Post> posts = [];
     String uid = AuthService.currentUserId();
+    var likedPostsData = [];
+    var likedPosts = [];
+
+    likedPostsData = await DataService.loadLikedPostsData();
+    for (var item in likedPostsData) {
+      likedPosts.addAll(item["posts"]);
+    }
 
     var docs = await _firestore.collection(folderUser).doc(uid).collection(folderPost).get();
     for (var item in docs.docs) {
@@ -95,6 +102,13 @@ class DataService {
       var doc = await _firestore.collection(folderUser).doc(uid).get();
       post.fullName = doc.data()!["fullName"];
       post.imgUser = doc.data()!["img_url"];
+
+      if (likedPosts.contains(post.id)) {
+        post.isLiked = true;
+      } else {
+        post.isLiked  = false;
+      }
+
       posts.add(post);
     }
     return posts;

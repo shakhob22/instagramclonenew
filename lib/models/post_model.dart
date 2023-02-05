@@ -8,7 +8,7 @@ class Post {
   String? imgPost;
   String? caption;
   String? date;
-  String? likes;
+  bool isLiked = false;
 
   bool mine = false;
 
@@ -23,7 +23,7 @@ class Post {
         imgPost = json["imgPost"];
         caption = json["caption"];
         date = json["date"];
-        likes = json["likes"];
+        // isLiked = json["likes"];
       }
 
   Map<String, dynamic> toJson() => {
@@ -32,6 +32,6 @@ class Post {
     "imgPost": imgPost,
     "caption": caption,
     "date": date,
-    "likes": likes,
+    // "likes": isLiked,
   };
 }

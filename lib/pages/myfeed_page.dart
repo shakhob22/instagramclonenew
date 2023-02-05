@@ -19,11 +19,19 @@ class _MyFeedPageState extends State<MyFeedPage> {
 
   List<Post> items = [];
   bool isLoading = false;
+  var likedPostsData = [];
+  var likedPosts = [];
 
   void loadFeeds() async {
     setState(() {
       isLoading = true;
     });
+
+    likedPosts = await DataService.loadLikedPostsData();
+    for (var item in likedPostsData) {
+      likedPosts.addAll(item["posts"]);
+    }
+
     List<Post> posts = await DataService.loadPosts();
     setState(() {
       items = posts;
@@ -77,6 +85,8 @@ class _MyFeedPageState extends State<MyFeedPage> {
   }
 
   Widget _itemOfPost(Post post) {
+
+
     return Container(
       color: Colors.white,
       child: Column(
@@ -139,9 +149,14 @@ class _MyFeedPageState extends State<MyFeedPage> {
               children: [
                 IconButton(
                   onPressed: (){
-                    DataService.likePost(post, false);
+                    setState((){
+                      post.isLiked = !post.isLiked;
+                    });
+                    DataService.likePost(post, post.isLiked);
                   },
-                  icon: Icon(FontAwesome.heart, color: Colors.red,),
+                  icon: (post.isLiked) ?
+                  Icon(FontAwesome.heart, color: Colors.red,) :
+                  Icon(FontAwesome.heart_empty, color: Colors.red,) ,
                 ),
                 SizedBox(width: 10,),
                 Icon(FontAwesome.paper_plane),
