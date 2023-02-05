@@ -28,6 +28,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
   String fullName = "";
   String email = "";
   String imgUrl = "";
+  int countPosts = 0, countFollowers = 0, countFollowing = 0;
   bool isLoading = false;
 
 
@@ -55,6 +56,8 @@ class _MyProfilePageState extends State<MyProfilePage> {
         fullName = member.fullName!;
         email = member.email!;
         imgUrl = member.img_url;
+        countFollowers = member.followers_count;
+        countFollowing = member.following_count;
         loadPosts();
       }),
     });
@@ -79,6 +82,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
     List<Post> posts = await DataService.loadPosts();
     setState(() {
       items = posts;
+      countPosts = items.length;
       isLoading = false;
     });
   }
@@ -167,7 +171,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("675", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                            Text(countPosts.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                             Text("POSTS", style: TextStyle(color: Colors.grey),),
                           ],
                         ),
@@ -177,7 +181,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("6275", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                            Text(countFollowers.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                             Text("FOLLOWERS", style: TextStyle(color: Colors.grey),),
                           ],
                         ),
@@ -187,7 +191,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("1675", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                            Text(countFollowing.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                             Text("FOLLOWING", style: TextStyle(color: Colors.grey),),
                           ],
                         ),

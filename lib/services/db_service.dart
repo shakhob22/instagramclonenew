@@ -12,6 +12,8 @@ class DataService {
   static String folderUser = "Users";
   static String folderPost = "posts";
   static String folderLike = "likes";
+  static String folderFollowing = "following";
+  static String folderFollowers = "followers";
 
   // save user
   static Future storeMember(Member member) async {
@@ -30,6 +32,13 @@ class DataService {
     String uid = AuthService.currentUserId();
     var value = await _firestore.collection(folderUser).doc(uid).get();
     Member member = Member.fromJson(value.data()!);
+
+    var doc1 = await _firestore.collection(folderUser).doc(uid).collection(folderFollowers).get();
+    var doc2 = await _firestore.collection(folderUser).doc(uid).collection(folderFollowing).get();
+
+    member.followers_count = doc1.docs.length;
+    member.following_count = doc2.docs.length;
+
     return member;
   }
 
@@ -167,6 +176,20 @@ class DataService {
       }
     }
     return posts;
+  }
+
+  static Future<void> followMember(Member member) async {
+    String uid = AuthService.currentUserId();
+    await _firestore.collection(folderUser).doc(uid).collection(folderFollowing).doc(member.uid).set({}).then((value) => {
+      // Notification
+    });
+    await _firestore.collection(folderUser).doc(member.uid).collection(folderFollowers).doc(uid).set({});
+  }
+
+  static Future<void> unfollowMember(Member member) async {
+    String uid = AuthService.currentUserId();
+    await _firestore.collection(folderUser).doc(uid).collection(folderFollowing).doc(member.uid).delete();
+    await _firestore.collection(folderUser).doc(member.uid).collection(folderFollowers).doc(uid).delete();
   }
   
 }
