@@ -129,7 +129,13 @@ class _MyLikesPageState extends State<MyLikesPage> {
             padding: EdgeInsets.all(10),
             child: Row(
               children: [
-                Icon(FontAwesome.heart, color: Colors.red,),
+                IconButton(
+                  onPressed: () async {
+                    await DataService.likePost(post, false);
+                    loadPosts();
+                  },
+                  icon: Icon(FontAwesome.heart, color: Colors.red,),
+                ),
                 SizedBox(width: 10,),
                 Icon(FontAwesome.paper_plane),
               ],

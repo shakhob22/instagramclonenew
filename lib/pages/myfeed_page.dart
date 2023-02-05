@@ -2,7 +2,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome_icons.dart';
-import 'package:instagramclone/pages/myupload_page.dart';
 import 'package:instagramclone/services/db_service.dart';
 
 import '../models/post_model.dart';
@@ -19,18 +18,11 @@ class _MyFeedPageState extends State<MyFeedPage> {
 
   List<Post> items = [];
   bool isLoading = false;
-  var likedPostsData = [];
-  var likedPosts = [];
 
   void loadFeeds() async {
     setState(() {
       isLoading = true;
     });
-
-    likedPosts = await DataService.loadLikedPostsData();
-    for (var item in likedPostsData) {
-      likedPosts.addAll(item["posts"]);
-    }
 
     List<Post> posts = await DataService.loadPosts();
     setState(() {
