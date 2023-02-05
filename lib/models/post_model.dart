@@ -3,10 +3,14 @@ class Post {
 
   String? uid;
   String? id;
+  String? fullName;
+  String? imgUser;
   String? imgPost;
   String? caption;
   String? date;
   String? likes;
+
+  bool mine = false;
 
   Post({
     this.imgPost,

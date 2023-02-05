@@ -32,7 +32,7 @@ class _MyUploadPageState extends State<MyUploadPage> {
         isLoading = true;
       });
       FileService.uploadPostImage(_image!).then((value) => {
-
+        resPostImage(value),
       });
 
 
@@ -54,80 +54,95 @@ class _MyUploadPageState extends State<MyUploadPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(
-          color: Colors.black,
-        ),
-        title: Text("Upload", style: TextStyle(fontFamily: "billabong", fontSize: 28, color: Colors.black),),
-        actions: [
-          IconButton(
-            onPressed: doUpload,
-            icon: Icon(Icons.upload),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            iconTheme: IconThemeData(
+              color: Colors.black,
+            ),
+            title: Text("Upload", style: TextStyle(fontFamily: "billabong", fontSize: 28, color: Colors.black),),
+            actions: [
+              IconButton(
+                onPressed: doUpload,
+                icon: Icon(Icons.upload),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.width,
-              child: Column(
-                children: [
-                  (_image == null) ?
-                  GestureDetector(
-                    onTap: _showPicker,
-                    child: Container(
-                      width: double.infinity,
-                      height: MediaQuery.of(context).size.width,
-                      color: Colors.grey.withOpacity(.4),
-                      child: Center(
-                        child: Icon(Icons.add_a_photo, size: 45),
-                      ),
-                    ),
-                  ) :
-                  Stack(
+          body: SingleChildScrollView(
+            child: Column(
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.width,
+                  child: Column(
                     children: [
-                      Image.file(
-                        _image!,
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.width,
-                        fit: BoxFit.cover,
-                      ),
-                      Container(
-                        width: double.infinity,
-                        alignment: Alignment.topRight,
-                        child: IconButton(
-                          onPressed: (){
-                            setState(() {
-                              _image = null;
-                            });
-                          },
-                          icon: Icon(Icons.highlight_remove, color: Colors.black,),
-                          color: Colors.white,
+                      (_image == null) ?
+                      GestureDetector(
+                        onTap: _showPicker,
+                        child: Container(
+                          width: double.infinity,
+                          height: MediaQuery.of(context).size.width,
+                          color: Colors.grey.withOpacity(.4),
+                          child: Center(
+                            child: Icon(Icons.add_a_photo, size: 45),
+                          ),
                         ),
-                      )
+                      ) :
+                      Stack(
+                        children: [
+                          Image.file(
+                            _image!,
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.width,
+                            fit: BoxFit.cover,
+                          ),
+                          Container(
+                            width: double.infinity,
+                            alignment: Alignment.topRight,
+                            child: IconButton(
+                              onPressed: (){
+                                setState(() {
+                                  _image = null;
+                                });
+                              },
+                              icon: Icon(Icons.highlight_remove, color: Colors.black,),
+                              color: Colors.white,
+                            ),
+                          )
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.all(10),
-              child: TextField(
-                controller: captionController,
-                maxLines: 5,
-                minLines: 1,
-                decoration: InputDecoration(
-                  hintText: "Caption",
-                  hintStyle: TextStyle(color: Colors.grey),
                 ),
-              ),
+                Container(
+                  padding: EdgeInsets.all(10),
+                  child: TextField(
+                    controller: captionController,
+                    maxLines: 5,
+                    minLines: 1,
+                    decoration: InputDecoration(
+                      hintText: "Caption",
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+        (isLoading) ?
+        Scaffold(
+          backgroundColor: Colors.grey.withOpacity(.3),
+          body: Container(
+            height: double.infinity,
+            width: double.infinity,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ) : SizedBox(),
+      ],
     );
   }
 

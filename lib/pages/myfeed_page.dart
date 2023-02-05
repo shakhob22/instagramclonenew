@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:instagramclone/pages/myupload_page.dart';
+import 'package:instagramclone/services/db_service.dart';
 
 import '../models/post_model.dart';
 
@@ -16,36 +17,62 @@ class MyFeedPage extends StatefulWidget {
 
 class _MyFeedPageState extends State<MyFeedPage> {
 
-  List<Post> items = [
-    Post(caption: "Post caption", imgPost: "https://firebasestorage.googleapis.com/v0/b/koreanguideway.appspot.com/o/develop%2Fpost.png?alt=media&token=f0b1ba56-4bf4-4df2-9f43-6b8665cdc964"),
-    Post(caption: "Post caption", imgPost: "https://firebasestorage.googleapis.com/v0/b/koreanguideway.appspot.com/o/develop%2Fpost2.png?alt=media&token=ac0c131a-4e9e-40c0-a75a-88e586b28b72"),
-  ];
+  List<Post> items = [];
+  bool isLoading = false;
+
+  void loadFeeds() async {
+    setState(() {
+      isLoading = true;
+    });
+    List<Post> posts = await DataService.loadPosts();
+    setState(() {
+      items = posts;
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    loadFeeds();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: IconThemeData(
-          color: Colors.black,
-        ),
-        title: Text("Instagram", style: TextStyle(fontFamily: "billabong", color: Colors.black, fontSize: 28),),
-        actions: [
-          IconButton(
-            onPressed: (){
-              widget.pageController?.animateToPage(2, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-            },
-            icon: Icon(Icons.camera_alt),
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            iconTheme: IconThemeData(
+              color: Colors.black,
+            ),
+            title: Text("Instagram", style: TextStyle(fontFamily: "billabong", color: Colors.black, fontSize: 28),),
+            actions: [
+              IconButton(
+                onPressed: (){
+                  widget.pageController?.animateToPage(2, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+                },
+                icon: Icon(Icons.camera_alt),
+              ),
+            ],
           ),
-        ],
-      ),
-      body: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return _itemOfPost(items[index]);
-        },
-      ),
+          body: ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              return _itemOfPost(items[index]);
+            },
+          ),
+        ),
+        (isLoading) ?
+        Scaffold(
+          backgroundColor: Colors.grey.withOpacity(.3),
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ) : SizedBox(),
+      ],
     );
   }
 
@@ -66,14 +93,14 @@ class _MyFeedPageState extends State<MyFeedPage> {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(40),
-                      child: (true) ?
+                      child: (post.imgUser!.isEmpty) ?
                       Image(
                         height: 40,
                         width: 40,
                         image: AssetImage("assets/images/ic_userImage.png"),
                       ) :
                       Image.network(
-                        "post.imgUser.toString(),",
+                        post.imgUser.toString(),
                         height: 40,
                         width: 40,
                         fit: BoxFit.cover,
@@ -83,16 +110,17 @@ class _MyFeedPageState extends State<MyFeedPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("User name", style: TextStyle(fontWeight: FontWeight.bold,),),
-                        Text("February 2, 2020")
+                        Text(post.fullName!, style: TextStyle(fontWeight: FontWeight.bold,),),
+                        Text(post.date!),
                       ],
                     )
                   ],
                 ),
+                (post.mine) ?
                 IconButton(
                   onPressed: (){},
                   icon: Icon(Icons.more_horiz),
-                ),
+                ) : SizedBox(),
               ],
             ),
           ),
@@ -109,7 +137,12 @@ class _MyFeedPageState extends State<MyFeedPage> {
             padding: EdgeInsets.all(10),
             child: Row(
               children: [
-                Icon(FontAwesome.heart, color: Colors.red,),
+                IconButton(
+                  onPressed: (){
+                    DataService.likePost(post, false);
+                  },
+                  icon: Icon(FontAwesome.heart, color: Colors.red,),
+                ),
                 SizedBox(width: 10,),
                 Icon(FontAwesome.paper_plane),
               ],
@@ -119,7 +152,7 @@ class _MyFeedPageState extends State<MyFeedPage> {
           Container(
             alignment: Alignment.centerLeft,
             padding: EdgeInsets.all(10),
-            child: Text("Post caption"),
+            child: Text(post.caption!),
           ),
         ],
       ),

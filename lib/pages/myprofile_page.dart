@@ -21,16 +21,14 @@ class MyProfilePage extends StatefulWidget {
 
 class _MyProfilePageState extends State<MyProfilePage> {
 
-  List<Post> items = [
-    Post(caption: "Post caption", imgPost: "https://firebasestorage.googleapis.com/v0/b/koreanguideway.appspot.com/o/develop%2Fpost.png?alt=media&token=f0b1ba56-4bf4-4df2-9f43-6b8665cdc964"),
-    Post(caption: "Post caption", imgPost: "https://firebasestorage.googleapis.com/v0/b/koreanguideway.appspot.com/o/develop%2Fpost2.png?alt=media&token=ac0c131a-4e9e-40c0-a75a-88e586b28b72"),
-  ];
+  List<Post> items = [];
 
   File? _image;
   final ImagePicker _picker = ImagePicker();
   String fullName = "";
   String email = "";
   String imgUrl = "";
+  bool isLoading = false;
 
 
   _imgFromGallery() async {
@@ -49,11 +47,15 @@ class _MyProfilePageState extends State<MyProfilePage> {
   }
 
   void getMember() {
+    setState(() {
+      isLoading = true;
+    });
     DataService.loadMember().then((member) => {
       setState((){
         fullName = member.fullName!;
         email = member.email!;
         imgUrl = member.img_url;
+        loadPosts();
       }),
     });
   }
@@ -73,6 +75,14 @@ class _MyProfilePageState extends State<MyProfilePage> {
     getMember();
   }
 
+  void loadPosts() async {
+    List<Post> posts = await DataService.loadPosts();
+    setState(() {
+      items = posts;
+      isLoading = false;
+    });
+  }
+
   @override
   void initState() {
     getMember();
@@ -81,122 +91,133 @@ class _MyProfilePageState extends State<MyProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: IconThemeData(
-          color: Colors.black,
-        ),
-        title: Text("Profile", style: TextStyle(color: Colors.black, fontFamily: "billabong", fontSize: 28)),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              bool yes = await Utils.commonDialog(context, "Profildan chiqish", "Profilingizdan chiqmoqchimisiz?", "Ha", "Yo'q", false);
-              if (yes) {
-                doSignOut();
-              }
-            },
-            icon: Icon(Icons.output),
-          )
-        ],
-      ),
-      body: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(10),
-        child: Column(
-          children: [
-            Stack(
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            iconTheme: IconThemeData(
+              color: Colors.black,
+            ),
+            title: Text("Profile", style: TextStyle(color: Colors.black, fontFamily: "billabong", fontSize: 28)),
+            actions: [
+              IconButton(
+                onPressed: () async {
+                  bool yes = await Utils.commonDialog(context, "Profildan chiqish", "Profilingizdan chiqmoqchimisiz?", "Ha", "Yo'q", false);
+                  if (yes) {
+                    doSignOut();
+                  }
+                },
+                icon: Icon(Icons.output),
+              )
+            ],
+          ),
+          body: Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(10),
+            child: Column(
               children: [
+                Stack(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(70),
+                        border: Border.all(
+                          width: 1.5,
+                          color: Color.fromRGBO(193, 53, 132, 1),
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(35),
+                        child: (imgUrl.isNotEmpty) ?
+                        Image.network(imgUrl, height: 70, width: 70, fit: BoxFit.cover,) :
+                        Image(
+                          height: 70,
+                          width: 70,
+                          image: AssetImage("assets/images/ic_userImage.png"),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: _imgFromGallery,
+                      child: Container(
+                        height: 80,
+                        width: 80,
+                        child: Align(
+                          alignment: Alignment.bottomRight,
+                          child: Icon(Icons.add_circle, color: Colors.purple),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10,),
+                Text(fullName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                Text(email, style: TextStyle(color: Colors.black54),),
                 Container(
-                  padding: EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(70),
-                    border: Border.all(
-                      width: 1.5,
-                      color: Color.fromRGBO(193, 53, 132, 1),
-                    ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(35),
-                    child: (imgUrl.isNotEmpty) ?
-                    Image.network(imgUrl, height: 70, width: 70, fit: BoxFit.cover,) :
-                    Image(
-                      height: 70,
-                      width: 70,
-                      image: AssetImage("assets/images/ic_userImage.png"),
-                      fit: BoxFit.cover,
-                    ),
+                  margin: EdgeInsets.only(top: 10),
+                  height: 80,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("675", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                            Text("POSTS", style: TextStyle(color: Colors.grey),),
+                          ],
+                        ),
+                      ),
+                      VerticalDivider(indent: 20, endIndent: 20, color: Colors.grey),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("6275", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                            Text("FOLLOWERS", style: TextStyle(color: Colors.grey),),
+                          ],
+                        ),
+                      ),
+                      VerticalDivider(indent: 20, endIndent: 20, color: Colors.grey),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("1675", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                            Text("FOLLOWING", style: TextStyle(color: Colors.grey),),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                GestureDetector(
-                  onTap: _imgFromGallery,
-                  child: Container(
-                    height: 80,
-                    width: 80,
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: Icon(Icons.add_circle, color: Colors.purple),
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
                     ),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      return _itemOfPost(items[index]);
+                    },
                   ),
-                ),
+                )
               ],
             ),
-            SizedBox(height: 10,),
-            Text(fullName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-            Text(email, style: TextStyle(color: Colors.black54),),
-            Container(
-              margin: EdgeInsets.only(top: 10),
-              height: 80,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("675", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                        Text("POSTS", style: TextStyle(color: Colors.grey),),
-                      ],
-                    ),
-                  ),
-                  VerticalDivider(indent: 20, endIndent: 20, color: Colors.grey),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("6275", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                        Text("FOLLOWERS", style: TextStyle(color: Colors.grey),),
-                      ],
-                    ),
-                  ),
-                  VerticalDivider(indent: 20, endIndent: 20, color: Colors.grey),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("1675", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                        Text("FOLLOWING", style: TextStyle(color: Colors.grey),),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                ),
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  return _itemOfPost(items[index]);
-                },
-              ),
-            )
-          ],
+          ),
         ),
-      ),
+        (isLoading) ?
+        Scaffold(
+          backgroundColor: Colors.grey.withOpacity(.3),
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ) : SizedBox(),
+      ],
     );
   }
 
