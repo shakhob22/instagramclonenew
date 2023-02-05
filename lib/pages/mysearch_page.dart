@@ -15,7 +15,6 @@ class _MySearchPageState extends State<MySearchPage> {
   TextEditingController searchController = TextEditingController();
   List<Member> items = [];
   bool isLoading = false;
-
   List emails = [];
 
   void getMembers() {
@@ -48,6 +47,20 @@ class _MySearchPageState extends State<MySearchPage> {
         isLoading = false;
       }),
     });
+  }
+
+  void followMember(Member member) async {
+    setState(() {
+      member.followed = true;
+    });
+    await DataService.followMember(member);
+  }
+
+  void unFollowMember(Member member) async {
+    setState(() {
+      member.followed = false;
+    });
+    await DataService.unfollowMember(member);
   }
 
   @override
@@ -163,6 +176,7 @@ class _MySearchPageState extends State<MySearchPage> {
                     onPressed: (){
                       setState(() {
                         member.followed = false;
+                        unFollowMember(member);
                       });
                     },
                     child: Text("Followed"),
@@ -180,6 +194,7 @@ class _MySearchPageState extends State<MySearchPage> {
                     onPressed: (){
                       setState(() {
                         member.followed = true;
+                        followMember(member);
                       });
                     },
                     child: Text("Follow", style: TextStyle(color: Colors.white)),
@@ -195,3 +210,16 @@ class _MySearchPageState extends State<MySearchPage> {
   }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
