@@ -52,6 +52,11 @@ class DataService {
     List<Member> members = [];
     String uid = AuthService.currentUserId();
 
+    List followings = [];
+    var doc = await _firestore.collection(folderUser).doc(uid).collection(folderFollowing).get();
+    for (var item in doc.docs) {
+      followings.add(item.id);
+    }
 
     for (var item in keywords) {
       var querySnapshot = await _firestore.collection(folderUser).where("email", isEqualTo: item).get();
@@ -60,6 +65,7 @@ class DataService {
         Member newMember = Member.fromJson(element.data());
         if (newMember.uid != uid) {
           print(newMember.fullName);
+          newMember.followed = followings.contains(newMember.uid);
           members.add(newMember);
         }
       });
@@ -71,11 +77,15 @@ class DataService {
   static Future<List<Member>> loadAllMembers() async {
 
     List<Member> members = [];
+    String uid = AuthService.currentUserId();
+
 
     var docs = await _firestore.collection(folderUser).get();
     for (var doc in docs.docs) {
       Member member = Member.fromJson(doc.data());
-      members.add(member);
+      if (member.uid != uid) {
+        members.add(member);
+      }
     }
 
     return members;

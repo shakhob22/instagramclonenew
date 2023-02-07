@@ -109,13 +109,27 @@ class _MySearchPageState extends State<MySearchPage> {
             ),
 
             Expanded(
-              child: ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  return _itemOfMember(items[index]);
-                },
+              child: Stack(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        return _itemOfMember(items[index]);
+                      },
+                    ),
+                  ),
+                  (isLoading) ?
+                  Container(
+                    height: double.infinity,
+                    width: double.infinity,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ) : SizedBox(),
+                ],
               ),
-            ),
+            )
           ],
         ),
       ),
