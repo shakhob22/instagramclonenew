@@ -201,6 +201,30 @@ class DataService {
     await _firestore.collection(folderUser).doc(uid).collection(folderFollowing).doc(member.uid).delete();
     await _firestore.collection(folderUser).doc(member.uid).collection(folderFollowers).doc(uid).delete();
   }
-  
+
+  static Future<List<Post>> loadFeeds() async {
+    List<Post> posts = [];
+    String uid = AuthService.currentUserId();
+
+    var doc = await _firestore.collection(folderUser).doc(uid).collection(folderFollowing).get();
+    List<Map<String, dynamic>> likedPosts = await loadLikedPostsData();
+
+    for (var someone in doc.docs) {
+      var postsDoc = await _firestore.collection(folderUser).doc(someone.id).collection(folderPost).get();
+      var userAndPost = likedPosts.firstWhere((element) => element["uid"] == someone.id);
+      List postsId = userAndPost["posts"];
+      for (var item in postsDoc.docs) {
+        Post post = Post.fromJson(item.data());
+        if (someone.id == uid) post.mine = true;
+        var doc = await _firestore.collection(folderUser).doc(someone.id).get();
+        post.fullName = doc.data()!["fullName"];
+        post.imgUser = doc.data()!["img_url"];
+        post.isLiked = postsId.contains(post.id);
+        posts.add(post);
+      }
+    }
+    return posts;
+  }
+
 }
 
