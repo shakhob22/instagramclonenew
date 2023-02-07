@@ -141,8 +141,8 @@ class DataService {
     List posts = [];
 
     if (likedPostsData.isNotEmpty) {
-      Map<String, dynamic> userAndPosts = likedPostsData.firstWhere((e) => e['uid'] == uid);
-      posts = userAndPosts["posts"];
+      Map<String, dynamic> userAndPosts = likedPostsData.firstWhere((e) => e['uid'] == uid, orElse: () => {});
+      if (userAndPosts.isNotEmpty) posts = userAndPosts["posts"];
     }
 
     if (isLiked) {
@@ -179,7 +179,7 @@ class DataService {
       for (var postsId in item["posts"]) {
         var doc = await _firestore.collection(folderUser).doc(item["uid"]).collection(folderPost).doc(postsId).get();
         Post post = Post.fromJson(doc.data()!);
-        var userDoc = await _firestore.collection(folderUser).doc(uid).get();
+        var userDoc = await _firestore.collection(folderUser).doc(post.uid).get();
         post.fullName = userDoc.data()!["fullName"];
         post.imgUser = userDoc.data()!["img_url"];
         posts.add(post);

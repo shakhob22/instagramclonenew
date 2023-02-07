@@ -109,25 +109,18 @@ class _MySearchPageState extends State<MySearchPage> {
             ),
 
             Expanded(
-              child: Stack(
-                children: [
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        return _itemOfMember(items[index]);
-                      },
-                    ),
-                  ),
-                  (isLoading) ?
-                  Container(
-                    height: double.infinity,
-                    width: double.infinity,
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  ) : SizedBox(),
-                ],
+              child: ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  Widget item = _itemOfMember(items[index]);
+                  return Column(
+                    children: [
+                      (isLoading) ?
+                      LinearProgressIndicator() : SizedBox(),
+                      item,
+                    ],
+                  );
+                },
               ),
             )
           ],
@@ -137,89 +130,93 @@ class _MySearchPageState extends State<MySearchPage> {
   }
 
   Widget _itemOfMember(Member member) {
-    return Container(
-      height: 90,
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(70),
-              border: Border.all(
-                width: 1.5,
-                color: Color.fromRGBO(193, 53, 132, 1),
-              ),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(22.5),
-              child: (member.img_url.isEmpty) ?
-              Image(
-                image: AssetImage("assets/images/ic_userImage.png"),
-                height: 45,
-                width: 45,
-                fit: BoxFit.cover,
-              ) :
-              Image(
-                image: NetworkImage(member.img_url),
-                height: 45,
-                width: 45,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          SizedBox(width: 15,),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(member.fullName!, style: TextStyle(fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),),
-                Text(member.email!, style: TextStyle(color: Colors.black54, overflow: TextOverflow.ellipsis),),
-              ],
-            ),
-          ),
-          Expanded(
-            child: member.followed ?
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(
-                  width: 100,
-                  height: 30,
-                  child: OutlinedButton(
-                    onPressed: (){
-                      setState(() {
-                        member.followed = false;
-                        unFollowMember(member);
-                      });
-                    },
-                    child: Text("Followed"),
+    return Column(
+      children: [
+        Container(
+          height: 90,
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(70),
+                  border: Border.all(
+                    width: 1.5,
+                    color: Color.fromRGBO(193, 53, 132, 1),
                   ),
                 ),
-              ],
-            ) :
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(
-                  width: 100,
-                  height: 30,
-                  child: MaterialButton(
-                    onPressed: (){
-                      setState(() {
-                        member.followed = true;
-                        followMember(member);
-                      });
-                    },
-                    child: Text("Follow", style: TextStyle(color: Colors.white)),
-                    color: Colors.blue,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(22.5),
+                  child: (member.img_url.isEmpty) ?
+                  Image(
+                    image: AssetImage("assets/images/ic_userImage.png"),
+                    height: 45,
+                    width: 45,
+                    fit: BoxFit.cover,
+                  ) :
+                  Image(
+                    image: NetworkImage(member.img_url),
+                    height: 45,
+                    width: 45,
+                    fit: BoxFit.cover,
                   ),
                 ),
-              ],
-            ) ,
+              ),
+              SizedBox(width: 15,),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(member.fullName!, style: TextStyle(fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis),),
+                    Text(member.email!, style: TextStyle(color: Colors.black54, overflow: TextOverflow.ellipsis),),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: member.followed ?
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      height: 30,
+                      child: OutlinedButton(
+                        onPressed: (){
+                          setState(() {
+                            member.followed = false;
+                            unFollowMember(member);
+                          });
+                        },
+                        child: Text("Followed"),
+                      ),
+                    ),
+                  ],
+                ) :
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: 100,
+                      height: 30,
+                      child: MaterialButton(
+                        onPressed: (){
+                          setState(() {
+                            member.followed = true;
+                            followMember(member);
+                          });
+                        },
+                        child: Text("Follow", style: TextStyle(color: Colors.white)),
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ],
+                ) ,
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
