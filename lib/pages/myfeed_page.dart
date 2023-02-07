@@ -23,8 +23,8 @@ class _MyFeedPageState extends State<MyFeedPage> {
     setState(() {
       isLoading = true;
     });
-
     List<Post> posts = await DataService.loadPosts();
+    posts.addAll(await DataService.loadFeeds());
     setState(() {
       items = posts;
       isLoading = false;

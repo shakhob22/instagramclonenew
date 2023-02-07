@@ -208,11 +208,15 @@ class DataService {
 
     var doc = await _firestore.collection(folderUser).doc(uid).collection(folderFollowing).get();
     List<Map<String, dynamic>> likedPosts = await loadLikedPostsData();
+    Map<String, dynamic> userAndPost = {};
+    List postsId = [];
 
     for (var someone in doc.docs) {
       var postsDoc = await _firestore.collection(folderUser).doc(someone.id).collection(folderPost).get();
-      var userAndPost = likedPosts.firstWhere((element) => element["uid"] == someone.id);
-      List postsId = userAndPost["posts"];
+
+      userAndPost = likedPosts.firstWhere((element) => element["uid"] == someone.id, orElse: () => {});
+      if (userAndPost.isNotEmpty) postsId = userAndPost["posts"];
+
       for (var item in postsDoc.docs) {
         Post post = Post.fromJson(item.data());
         if (someone.id == uid) post.mine = true;
