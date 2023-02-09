@@ -5,6 +5,7 @@ import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:instagramclone/services/db_service.dart';
 
 import '../models/post_model.dart';
+import '../services/utils_service.dart';
 
 class MyFeedPage extends StatefulWidget {
   final PageController? pageController;
@@ -29,6 +30,14 @@ class _MyFeedPageState extends State<MyFeedPage> {
       items = posts;
       isLoading = false;
     });
+  }
+
+  void removePost(Post post) async {
+    bool isYes = await Utils.commonDialog(context, "Postni o'chirish", "Ushbu postni o'chirasizmi?", "Ha", "Yo'q");
+    if (isYes) {
+      await DataService.removePost(post);
+      loadFeeds();
+    }
   }
 
   @override
@@ -120,7 +129,9 @@ class _MyFeedPageState extends State<MyFeedPage> {
                 ),
                 (post.mine) ?
                 IconButton(
-                  onPressed: (){},
+                  onPressed: (){
+                    removePost(post);
+                  },
                   icon: Icon(Icons.more_horiz),
                 ) : SizedBox(),
               ],

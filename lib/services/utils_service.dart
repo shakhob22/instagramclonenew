@@ -27,7 +27,7 @@ class Utils {
     return RegExp(r'(?=.*?[0-9]).{8,}$').hasMatch(password);
   }
 
-  static Future<bool> commonDialog(context, title, content, yes, no, isSingle) async {
+  static Future<bool> commonDialog(context, title, content, yes, no) async {
     return await showDialog(
       context: context,
       builder: (context) {

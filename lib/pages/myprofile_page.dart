@@ -109,7 +109,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
             actions: [
               IconButton(
                 onPressed: () async {
-                  bool yes = await Utils.commonDialog(context, "Profildan chiqish", "Profilingizdan chiqmoqchimisiz?", "Ha", "Yo'q", false);
+                  bool yes = await Utils.commonDialog(context, "Profildan chiqish", "Profilingizdan chiqmoqchimisiz?", "Ha", "Yo'q");
                   if (yes) {
                     doSignOut();
                   }

@@ -1,6 +1,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagramclone/services/auth_service.dart';
+import 'package:instagramclone/services/file_service.dart';
 import 'package:instagramclone/services/utils_service.dart';
 
 import '../models/member_model.dart';
@@ -228,6 +229,12 @@ class DataService {
       }
     }
     return posts;
+  }
+
+  static Future<void> removePost(Post post) async {
+    String uid = AuthService.currentUserId();
+    await FileService.removePostImage(post.imgPost);
+    await _firestore.collection(folderUser).doc(uid).collection(folderPost).doc(post.id).delete();
   }
 
 }

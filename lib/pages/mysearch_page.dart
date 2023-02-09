@@ -107,19 +107,13 @@ class _MySearchPageState extends State<MySearchPage> {
                 ),
               ),
             ),
-
+            (isLoading) ?
+            LinearProgressIndicator() : SizedBox(),
             Expanded(
               child: ListView.builder(
                 itemCount: items.length,
                 itemBuilder: (context, index) {
-                  Widget item = _itemOfMember(items[index]);
-                  return Column(
-                    children: [
-                      (isLoading) ?
-                      LinearProgressIndicator() : SizedBox(),
-                      item,
-                    ],
-                  );
+                  return _itemOfMember(items[index]);
                 },
               ),
             )
