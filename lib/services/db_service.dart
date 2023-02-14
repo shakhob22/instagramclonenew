@@ -2,6 +2,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagramclone/services/auth_service.dart';
 import 'package:instagramclone/services/file_service.dart';
+import 'package:instagramclone/services/http_service.dart';
 import 'package:instagramclone/services/utils_service.dart';
 
 import '../models/member_model.dart';
@@ -172,29 +173,33 @@ class DataService {
   }
 
   static Future<List<Post>> loadLikes() async {
-
     List<Map<String, dynamic>> postsData = await loadLikedPostsData();
     String uid = AuthService.currentUserId();
     List<Post> posts = [];
     for (var item in postsData) {
       for (var postsId in item["posts"]) {
         var doc = await _firestore.collection(folderUser).doc(item["uid"]).collection(folderPost).doc(postsId).get();
-        Post post = Post.fromJson(doc.data()!);
-        var userDoc = await _firestore.collection(folderUser).doc(post.uid).get();
-        post.fullName = userDoc.data()!["fullName"];
-        post.imgUser = userDoc.data()!["img_url"];
-        posts.add(post);
+        if (doc.exists) {
+          Post post = Post.fromJson(doc.data()!);
+          var userDoc = await _firestore.collection(folderUser).doc(post.uid).get();
+          post.fullName = userDoc.data()!["fullName"];
+          post.imgUser = userDoc.data()!["img_url"];
+          posts.add(post);
+        }
       }
     }
     return posts;
   }
 
-  static Future<void> followMember(Member member) async {
+  static Future<void> followMember(Member someone) async {
     String uid = AuthService.currentUserId();
-    await _firestore.collection(folderUser).doc(uid).collection(folderFollowing).doc(member.uid).set({}).then((value) => {
-      // Notification
+    Member me = await loadMember();
+
+    await _firestore.collection(folderUser).doc(uid).collection(folderFollowing).doc(someone.uid).set({}).then((value) => {
+      Network.sendNotification(me.fullName!, someone),
     });
-    await _firestore.collection(folderUser).doc(member.uid).collection(folderFollowers).doc(uid).set({});
+
+    await _firestore.collection(folderUser).doc(someone.uid).collection(folderFollowers).doc(uid).set({});
   }
 
   static Future<void> unfollowMember(Member member) async {
@@ -238,4 +243,3 @@ class DataService {
   }
 
 }
-

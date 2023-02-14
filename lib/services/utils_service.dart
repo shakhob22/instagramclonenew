@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:instagramclone/services/prefs_service.dart';
 import 'package:platform_device_id/platform_device_id.dart';
@@ -101,6 +103,17 @@ class Utils {
 
     String convertedDateTime = "${now.year.toString()}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString()}:${now.minute.toString()}";
     return convertedDateTime;
+  }
+
+  static Future<void> showLocalNotification(Map<String, dynamic> message) async {
+    String title = message["title"];
+    String body = message["body"];
+
+    var android = const AndroidNotificationDetails("channelId", "channelName", channelDescription: "channelDescription");
+    var platform = NotificationDetails(android: android);
+
+    int id = Random().nextInt(pow(2, 31).toInt() - 1);
+    await FlutterLocalNotificationsPlugin().show(id, title, body, platform);
   }
 
 }
